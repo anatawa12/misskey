@@ -43,6 +43,7 @@ import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { bindThis } from '@/decorators.js';
 import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { RoleService } from '@/core/RoleService.js';
+import { blobize } from '@/misc/blobize.js';
 
 const mutedWordsCache = new Cache<{ userId: UserProfile['userId']; mutedWords: UserProfile['mutedWords']; }[]>(1000 * 60 * 5);
 
@@ -192,7 +193,7 @@ export class NoteCreateService {
 		private perUserNotesChart: PerUserNotesChart,
 		private activeUsersChart: ActiveUsersChart,
 		private instanceChart: InstanceChart,
-	) {}
+	) { }
 
 	@bindThis
 	public async create(user: {
@@ -268,6 +269,11 @@ export class NoteCreateService {
 			data.text = data.text.trim();
 		} else {
 			data.text = null;
+		}
+
+		// 絵文字をblobmojiに置換
+		if (data.text && this.userEntityService.isLocalUser(user)) {
+			data.text = blobize(data.text);
 		}
 
 		let tags = data.apHashtags;
@@ -379,7 +385,7 @@ export class NoteCreateService {
 		// 投稿を作成
 		try {
 			if (insert.hasPoll) {
-			// Start transaction
+				// Start transaction
 				await this.db.transaction(async transactionalEntityManager => {
 					await transactionalEntityManager.insert(Note, insert);
 
@@ -402,7 +408,7 @@ export class NoteCreateService {
 
 			return insert;
 		} catch (e) {
-		// duplicate key error
+			// duplicate key error
 			if (isDuplicateKeyValueError(e)) {
 				const err = new Error('Duplicated note');
 				err.name = 'duplicated';

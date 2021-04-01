@@ -26,6 +26,7 @@ import { ApMfmService } from './ApMfmService.js';
 import type { IActivity, IObject } from './type.js';
 import type { IIdentifier } from './models/identifier.js';
 import { bindThis } from '@/decorators.js';
+import { blobize } from '@/misc/blobize.js';
 
 @Injectable()
 export class ApRendererService {
@@ -262,7 +263,7 @@ export class ApRendererService {
 
 	@bindThis
 	public async renderLike(noteReaction: NoteReaction, note: { uri: string | null }) {
-		const reaction = noteReaction.reaction;
+		const reaction = blobize(noteReaction.reaction);
 
 		const object = {
 			type: 'Like',
