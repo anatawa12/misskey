@@ -36,7 +36,7 @@
 import { markRaw, ref, shallowRef, computed, onUpdated, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
 import sanitizeHtml from 'sanitize-html';
 import contains from '@/scripts/contains';
-import { char2twemojiFilePath, char2fluentEmojiFilePath } from '@/scripts/emoji-base';
+import { chat2pathSelector } from '@/scripts/emoji-base';
 import { acct } from '@/filters/user';
 import * as os from '@/os';
 import { MFM_TAGS } from '@/scripts/mfm-tags';
@@ -63,7 +63,7 @@ const lib = emojilist.filter(x => x.category !== 'flags');
 
 const emojiDb = computed(() => {
 	//#region Unicode Emoji
-	const char2path = defaultStore.reactiveState.emojiStyle.value === 'twemoji' ? char2twemojiFilePath : char2fluentEmojiFilePath;
+	const char2path = chat2pathSelector(defaultStore.reactiveState.emojiStyle.value);
 
 	const unicodeEmojiDB: EmojiDef[] = lib.map(x => ({
 		emoji: x.char,

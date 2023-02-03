@@ -4,3 +4,6 @@
 [submodule "fluent-emojis"]
 	path = fluent-emojis
 	url = https://github.com/misskey-dev/emojis.git
+[submodule "blobmoji"]
+	path = blobmoji
+	url = https://github.com/m-hayabusa/blobmoji.git

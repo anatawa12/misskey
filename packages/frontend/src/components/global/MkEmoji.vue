@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { char2twemojiFilePath, char2fluentEmojiFilePath } from '@/scripts/emoji-base';
+import { chat2pathSelector } from '@/scripts/emoji-base';
 import { defaultStore } from '@/store';
 import { getEmojiName } from '@/scripts/emojilist';
 
@@ -14,7 +14,7 @@ const props = defineProps<{
 	emoji: string;
 }>();
 
-const char2path = defaultStore.state.emojiStyle === 'twemoji' ? char2twemojiFilePath : char2fluentEmojiFilePath;
+const char2path = chat2pathSelector(defaultStore.reactiveState.emojiStyle.value);
 
 const useOsNativeEmojis = computed(() => defaultStore.state.emojiStyle === 'native');
 const url = computed(() => {
