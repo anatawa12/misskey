@@ -3,7 +3,6 @@ const fluentEmojiPngBase = '/fluent-emoji';
 const blobmojiSvgBase = '/blobmoji';
 
 export function chat2pathSelector(emojiStyle: string): (char: string) => string {
-	console.log(emojiStyle);
 	switch (emojiStyle) {
 		case "twemoji":
 			return char2twemojiFilePath
