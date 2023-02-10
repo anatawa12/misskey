@@ -46,8 +46,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			const query = this.notesRepository.createQueryBuilder('note')
 				.addSelect('note.score')
-				.where('note.userHost IS NULL')
-				.andWhere('note.score > 0')
+				.where('note.score > 0')
 				.andWhere('note.createdAt > :date', { date: new Date(Date.now() - day) })
 				.andWhere('note.visibility = \'public\'')
 				.innerJoinAndSelect('note.user', 'user')
