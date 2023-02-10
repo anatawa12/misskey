@@ -62,6 +62,7 @@
 					<option value="native">{{ i18n.ts.native }}</option>
 					<option value="fluentEmoji">Fluent Emoji</option>
 					<option value="twemoji">Twemoji</option>
+					<option value="notoEmoji">Noto Emoji</option>
 					<option value="blobmoji">Blobmoji</option>
 				</MkRadios>
 				<div style="margin: 8px 0 0 0; font-size: 1.5em;"><Mfm :key="emojiStyle" text="🍮🍦🍭🍩🍰🍫🍬🥞🍪"/></div>

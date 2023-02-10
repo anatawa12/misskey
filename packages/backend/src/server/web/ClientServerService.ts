@@ -261,7 +261,7 @@ export class ClientServerService {
 		fastify.get<{ Params: { path: string } }>('/blobmoji/:path(.*)', async (request, reply) => {
 			const path = request.params.path;
 
-			if (!path.match(/^[0-9a-f-]+\.svg$/)) {
+			if (!path.match(/^emoji_u[0-9a-f_]+\.svg$/)) {
 				reply.code(404);
 				return;
 			}
@@ -269,6 +269,21 @@ export class ClientServerService {
 			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
 
 			return await reply.sendFile(path, `${_dirname}/../../../../../blobmoji/svg/`, {
+				maxAge: ms('30 days'),
+			});
+		});
+
+		fastify.get<{ Params: { path: string } }>('/notoemoji/:path(.*)', async (request, reply) => {
+			const path = request.params.path;
+
+			if (!path.match(/^emoji_u[0-9a-f_]+\.svg$/)) {
+				reply.code(404);
+				return;
+			}
+
+			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
+
+			return await reply.sendFile(path, `${_dirname}/../../../../../noto-emoji/svg/`, {
 				maxAge: ms('30 days'),
 			});
 		});
@@ -461,7 +476,7 @@ export class ClientServerService {
 				return;
 			}
 
-			reply.redirect(`/@${user.username}${ user.host == null ? '' : '@' + user.host}`);
+			reply.redirect(`/@${user.username}${user.host == null ? '' : '@' + user.host}`);
 		});
 
 		// Note
