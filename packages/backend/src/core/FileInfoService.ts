@@ -392,12 +392,18 @@ export class FileInfoService {
 	 */
 	@bindThis
 	private async getDescription(path: string): Promise<string | undefined> {
-		const result = await exifr.parse(path, ['Description', 'ImageDescription']);
+		const result = await exifr.parse(path, true);
 		if (result) {
-			if (result.descripton) { // EXIF
-				return result.descripton;
-			} else if (result.ImageDescription) { // XMP
+			if (result.ImageDescription) {
 				return result.ImageDescription;
+			} else if (result.descripton && result.descripton.value) {
+				return result.descripton.value;
+			} else if (result.userComment) {
+				try {
+					return new TextDecoder().decode(result.userComment).replaceAll('\0','')
+				} catch(e) {
+					// UTF-8でない可能性が高い 無視してよいだろう
+				}
 			}
 		}
 		return undefined;
