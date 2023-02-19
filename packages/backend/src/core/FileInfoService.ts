@@ -11,6 +11,7 @@ import isSvg from 'is-svg';
 import probeImageSize from 'probe-image-size';
 import { type predictionType } from 'nsfwjs';
 import sharp from 'sharp';
+import exifr from 'exifr';
 import { encode } from 'blurhash';
 import { createTempDir } from '@/misc/create-temp.js';
 import { AiService } from '@/core/AiService.js';
@@ -28,6 +29,7 @@ export type FileInfo = {
 	width?: number;
 	height?: number;
 	orientation?: number;
+	description?: string;
 	blurhash?: string;
 	sensitive: boolean;
 	porn: boolean;
@@ -126,6 +128,19 @@ export class FileInfoService {
 			});
 		}
 
+		let description: string | undefined;
+		if ([
+			'image/jpeg',
+			'image/png',
+			'image/apng',
+			'image/webp',
+			'image/avif',
+			'image/heic',
+			'image/heif',
+		].includes(type.mime)) {
+			description = await this.getDescription(path);
+		}
+
 		let sensitive = false;
 		let porn = false;
 
@@ -151,6 +166,7 @@ export class FileInfoService {
 			height,
 			orientation,
 			blurhash,
+			description,
 			sensitive,
 			porn,
 			warnings,
@@ -161,20 +177,20 @@ export class FileInfoService {
 	private async detectSensitivity(source: string, mime: string, sensitiveThreshold: number, sensitiveThresholdForPorn: number, analyzeVideo: boolean): Promise<[sensitive: boolean, porn: boolean]> {
 		let sensitive = false;
 		let porn = false;
-	
+
 		function judgePrediction(result: readonly predictionType[]): [sensitive: boolean, porn: boolean] {
 			let sensitive = false;
 			let porn = false;
-	
+
 			if ((result.find(x => x.className === 'Sexy')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
 			if ((result.find(x => x.className === 'Hentai')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
 			if ((result.find(x => x.className === 'Porn')?.probability ?? 0) > sensitiveThreshold) sensitive = true;
-	
+
 			if ((result.find(x => x.className === 'Porn')?.probability ?? 0) > sensitiveThresholdForPorn) porn = true;
-	
+
 			return [sensitive, porn];
 		}
-	
+
 		if ([
 			'image/jpeg',
 			'image/png',
@@ -253,10 +269,10 @@ export class FileInfoService {
 				disposeOutDir();
 			}
 		}
-	
+
 		return [sensitive, porn];
 	}
-	
+
 	private async *asyncIterateFrames(cwd: string, command: FFmpeg.FfmpegCommand): AsyncGenerator<string, void> {
 		const watcher = new FSWatcher({
 			cwd,
@@ -295,7 +311,7 @@ export class FileInfoService {
 			}
 		}
 	}
-	
+
 	@bindThis
 	private exists(path: string): Promise<boolean> {
 		return fs.promises.access(path).then(() => true, () => false);
@@ -306,10 +322,10 @@ export class FileInfoService {
 	 */
 	@bindThis
 	public async detectType(path: string): Promise<{
-	mime: string;
-	ext: string | null;
-}> {
-	// Check 0 byte
+		mime: string;
+		ext: string | null;
+	}> {
+		// Check 0 byte
 		const fileSize = await this.getFileSize(path);
 		if (fileSize === 0) {
 			return TYPE_OCTET_STREAM;
@@ -318,7 +334,7 @@ export class FileInfoService {
 		const type = await fileTypeFromFile(path);
 
 		if (type) {
-		// XMLはSVGかもしれない
+			// XMLはSVGかもしれない
 			if (type.mime === 'application/xml' && await this.checkSvg(path)) {
 				return TYPE_SVG;
 			}
@@ -369,6 +385,22 @@ export class FileInfoService {
 		const hash = crypto.createHash('md5').setEncoding('hex');
 		await pipeline(fs.createReadStream(path), hash);
 		return hash.read();
+	}
+
+	/**
+	 * Get ImageDescription
+	 */
+	@bindThis
+	private async getDescription(path: string): Promise<string | undefined> {
+		const result = await exifr.parse(path, ['Description', 'ImageDescription']);
+		if (result) {
+			if (result.descripton) { // EXIF
+				return result.descripton;
+			} else if (result.ImageDescription) { // XMP
+				return result.ImageDescription;
+			}
+		}
+		return undefined;
 	}
 
 	/**
