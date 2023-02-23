@@ -72,7 +72,7 @@ export class UserProfile {
 	public emailVerified: boolean;
 
 	@Column('jsonb', {
-		default: ['follow', 'receiveFollowRequest', 'groupInvited'],
+		default: ['follow', 'receiveFollowRequest'],
 	})
 	public emailNotificationTypes: string[];
 
@@ -203,7 +203,11 @@ export class UserProfile {
 	public mutedInstances: string[];
 
 	@Column('enum', {
-		enum: notificationTypes,
+		enum: [ 
+			...notificationTypes,
+			// マイグレーションで削除が困難なので古いenumは残しておく
+			'groupInvited',
+		],
 		array: true,
 		default: [],
 	})
