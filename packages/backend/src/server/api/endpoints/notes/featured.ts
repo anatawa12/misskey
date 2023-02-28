@@ -29,6 +29,7 @@ export const paramDef = {
 		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
 		global: { type: 'boolean', default: false },
 		offset: { type: 'integer', default: 0 },
+		channelId: { type: 'string', nullable: true, format: 'misskey:id' },
 	},
 	required: [],
 } as const;
@@ -64,7 +65,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				.leftJoinAndSelect('renoteUser.banner', 'renoteUserBanner');
 
 			if (!ps.global)query.andWhere('note.userHost IS NULL');
-
+			if (ps.channelId) query.andWhere('note.channelId = :channelId', { channelId: ps.channelId });
 			if (me) this.queryService.generateMutedUserQuery(query, me);
 			if (me) this.queryService.generateBlockedUserQuery(query, me);
 

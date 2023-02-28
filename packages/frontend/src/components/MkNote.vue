@@ -31,7 +31,7 @@
 				<i v-else-if="note.visibility === 'followers'" class="ti ti-lock"></i>
 				<i v-else-if="note.visibility === 'specified'" ref="specified" class="ti ti-mail"></i>
 			</span>
-			<span v-if="note.localOnly" style="margin-left: 0.5em;" :title="i18n.ts._visibility['localOnly']"><i class="ti ti-world-off"></i></span>
+			<span v-if="note.localOnly" style="margin-left: 0.5em;" :title="i18n.ts._visibility['disableFederation']"><i class="ti ti-world-off"></i></span>
 		</div>
 	</div>
 	<div v-if="renoteCollapsed" :class="$style.collapsedRenoteTarget">
@@ -255,7 +255,7 @@ function renote(viaKeyboard = false) {
 			text: i18n.ts.inChannelRenote,
 			icon: 'ti ti-repeat',
 			action: () => {
-				os.api('notes/create', {
+				os.apiWithDialog('notes/create', {
 					renoteId: appearNote.id,
 					channelId: appearNote.channelId,
 				});
@@ -276,7 +276,7 @@ function renote(viaKeyboard = false) {
 		text: i18n.ts.renote,
 		icon: 'ti ti-repeat',
 		action: () => {
-			os.api('notes/create', {
+			os.apiWithDialog('notes/create', {
 				renoteId: appearNote.id,
 			});
 		},
@@ -673,9 +673,17 @@ function showReactions(): void {
 	opacity: 0.7;
 }
 
-@container (max-width: 500px) {
+@container (max-width: 580px) {
 	.root {
-		font-size: 0.9em;
+		font-size: 0.95em;
+	}
+
+	.renote {
+		padding: 12px 26px 0 26px;
+	}
+
+	.article {
+		padding: 24px 26px 14px;
 	}
 
 	.avatar {
@@ -684,7 +692,21 @@ function showReactions(): void {
 	}
 }
 
-@container (max-width: 450px) {
+@container (max-width: 500px) {
+	.root {
+		font-size: 0.9em;
+	}
+
+	.renote {
+		padding: 10px 22px 0 22px;
+	}
+
+	.article {
+		padding: 20px 22px 12px;
+	}
+}
+
+@container (max-width: 480px) {
 	.renote {
 		padding: 8px 16px 0 16px;
 	}
@@ -701,7 +723,9 @@ function showReactions(): void {
 	.article {
 		padding: 14px 16px 9px;
 	}
+}
 
+@container (max-width: 450px) {
 	.avatar {
 		margin: 0 10px 8px 0;
 		width: 46px;
@@ -710,10 +734,18 @@ function showReactions(): void {
 	}
 }
 
-@container (max-width: 350px) {
+@container (max-width: 400px) {
 	.footerButton {
 		&:not(:last-child) {
 			margin-right: 18px;
+		}
+	}
+}
+
+@container (max-width: 350px) {
+	.footerButton {
+		&:not(:last-child) {
+			margin-right: 12px;
 		}
 	}
 }
@@ -726,7 +758,7 @@ function showReactions(): void {
 
 	.footerButton {
 		&:not(:last-child) {
-			margin-right: 12px;
+			margin-right: 8px;
 		}
 	}
 }
