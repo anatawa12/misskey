@@ -1,10 +1,12 @@
 <template>
 <MkSpacer :content-max="800">
 	<MkTab v-model="tab" style="margin-bottom: var(--margin);">
-		<option value="notes">{{ i18n.ts.notes }}</option>
+		<option value="notes">{{ i18n.ts.local }}</option>
+		<option value="globalNotes">{{ i18n.ts.global }}</option>
 		<option value="polls">{{ i18n.ts.poll }}</option>
 	</MkTab>
 	<MkNotes v-if="tab === 'notes'" :pagination="paginationForNotes"/>
+	<MkNotes v-else-if="tab === 'globalNotes'" :pagination="paginationForGlobalNotes"/>
 	<MkNotes v-else-if="tab === 'polls'" :pagination="paginationForPolls"/>
 </MkSpacer>
 </template>
@@ -16,6 +18,14 @@ import { i18n } from '@/i18n';
 
 const paginationForNotes = {
 	endpoint: 'notes/featured' as const,
+	params: { 'global': false },
+	limit: 10,
+	offsetMode: true,
+};
+
+const paginationForGlobalNotes = {
+	endpoint: 'notes/featured' as const,
+	params: { 'global': true },
 	limit: 10,
 	offsetMode: true,
 };
