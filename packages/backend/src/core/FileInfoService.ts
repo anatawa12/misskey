@@ -392,7 +392,7 @@ export class FileInfoService {
 	 */
 	@bindThis
 	private async getDescription(path: string): Promise<string | undefined> {
-		const result = await exifr.parse(path, true);
+		const result = await exifr.parse(path, true).catch(e => {console.warn(e);});
 		if (result) {
 			if (result.ImageDescription) {
 				return result.ImageDescription;
@@ -401,7 +401,7 @@ export class FileInfoService {
 			} else if (result.userComment) {
 				try {
 					return new TextDecoder().decode(result.userComment).replaceAll('\0','')
-				} catch(e) {
+				} catch (e) {
 					// UTF-8でない可能性が高い 無視してよいだろう
 				}
 			}
