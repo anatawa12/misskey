@@ -30,7 +30,7 @@ import PerUserNotesChart from '@/core/chart/charts/per-user-notes.js';
 import InstanceChart from '@/core/chart/charts/instance.js';
 import ActiveUsersChart from '@/core/chart/charts/active-users.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { CreateNotificationService } from '@/core/CreateNotificationService.js';
+import { NotificationService } from '@/core/NotificationService.js';
 import { WebhookService } from '@/core/WebhookService.js';
 import { HashtagService } from '@/core/HashtagService.js';
 import { AntennaService } from '@/core/AntennaService.js';
@@ -45,6 +45,7 @@ import { bindThis } from '@/decorators.js';
 import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { RoleService } from '@/core/RoleService.js';
 import { blobize } from '@/misc/blobize.js';
+import { MetaService } from '@/core/MetaService.js';
 
 const mutedWordsCache = new Cache<{ userId: UserProfile['userId']; mutedWords: UserProfile['mutedWords']; }[]>(1000 * 60 * 5);
 
@@ -60,7 +61,7 @@ class NotificationManager {
 
 	constructor(
 		private mutingsRepository: MutingsRepository,
-		private createNotificationService: CreateNotificationService,
+		private notificationService: NotificationService,
 		notifier: { id: User['id']; },
 		note: Note,
 	) {
@@ -101,7 +102,7 @@ class NotificationManager {
 
 			// 通知される側のユーザーが通知する側のユーザーをミュートしていない限りは通知する
 			if (!mentioneesMutedUserIds.includes(this.notifier.id)) {
-				this.createNotificationService.createNotification(x.target, x.reason, {
+				this.notificationService.createNotification(x.target, x.reason, {
 					notifierId: this.notifier.id,
 					noteId: this.note.id,
 				});
@@ -126,6 +127,7 @@ type Option = {
 	files?: DriveFile[] | null;
 	poll?: IPoll | null;
 	localOnly?: boolean | null;
+	reactionAcceptance?: Note['reactionAcceptance'];
 	cw?: string | null;
 	visibility?: string;
 	visibleUsers?: MinimumUser[] | null;
@@ -182,7 +184,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private globalEventService: GlobalEventService,
 		private queueService: QueueService,
 		private noteReadService: NoteReadService,
-		private createNotificationService: CreateNotificationService,
+		private notificationService: NotificationService,
 		private relayService: RelayService,
 		private federatedInstanceService: FederatedInstanceService,
 		private hashtagService: HashtagService,
@@ -192,6 +194,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private apDeliverManagerService: ApDeliverManagerService,
 		private apRendererService: ApRendererService,
 		private roleService: RoleService,
+		private metaService: MetaService,
 		private notesChart: NotesChart,
 		private perUserNotesChart: PerUserNotesChart,
 		private activeUsersChart: ActiveUsersChart,
@@ -230,7 +233,9 @@ export class NoteCreateService implements OnApplicationShutdown {
 		if (data.channel != null) data.localOnly = true;
 
 		if (data.visibility === 'public' && data.channel == null) {
-			if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
+			if ((data.text != null) && (await this.metaService.fetch()).sensitiveWords.some(w => data.text!.includes(w))) {
+				data.visibility = 'home';
+			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
 				data.visibility = 'home';
 			}
 		}
@@ -352,6 +357,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			emojis,
 			userId: user.id,
 			localOnly: data.localOnly!,
+			reactionAcceptance: data.reactionAcceptance,
 			visibility: data.visibility as any,
 			visibleUserIds: data.visibility === 'specified'
 				? data.visibleUsers
@@ -558,7 +564,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 				}
 			});
 
-			const nm = new NotificationManager(this.mutingsRepository, this.createNotificationService, user, note);
+			const nm = new NotificationManager(this.mutingsRepository, this.notificationService, user, note);
 
 			await this.createMentionedEvents(mentionedUsers, note, nm);
 
