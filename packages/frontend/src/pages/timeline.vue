@@ -67,7 +67,7 @@ async function chooseList(ev: MouseEvent): Promise<void> {
 		type: 'link' as const,
 		text: list.name,
 		to: `/timeline/list/${list.id}`,
-	}));
+	})).reverse();
 	os.popupMenu(items, ev.currentTarget ?? ev.target);
 }
 
@@ -78,7 +78,7 @@ async function chooseAntenna(ev: MouseEvent): Promise<void> {
 		text: antenna.name,
 		indicate: antenna.hasUnreadNote,
 		to: `/timeline/antenna/${antenna.id}`,
-	}));
+	})).reverse();
 	os.popupMenu(items, ev.currentTarget ?? ev.target);
 }
 
@@ -91,7 +91,7 @@ async function chooseChannel(ev: MouseEvent): Promise<void> {
 		text: channel.name,
 		indicate: channel.hasUnreadNote,
 		to: `/channels/${channel.id}`,
-	}));
+	})).reverse();
 	os.popupMenu(items, ev.currentTarget ?? ev.target);
 }
 
