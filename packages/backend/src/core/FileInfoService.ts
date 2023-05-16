@@ -5,7 +5,7 @@ import * as stream from 'node:stream';
 import * as util from 'node:util';
 import { Injectable } from '@nestjs/common';
 import { FSWatcher } from 'chokidar';
-import { fileTypeFromFile } from 'file-type';
+import * as fileType from 'file-type';
 import FFmpeg from 'fluent-ffmpeg';
 import isSvg from 'is-svg';
 import probeImageSize from 'probe-image-size';
@@ -317,6 +317,19 @@ export class FileInfoService {
 		return fs.promises.access(path).then(() => true, () => false);
 	}
 
+	@bindThis
+	public fixMime(mime: string | fileType.MimeType): string {
+		// see https://github.com/misskey-dev/misskey/pull/10686
+		if (mime === "audio/x-flac") {
+			return "audio/flac";
+		}
+		if (mime === "audio/vnd.wave") {
+			return "audio/wav";
+		}
+
+		return mime;
+	}
+
 	/**
 	 * Detect MIME Type and extension
 	 */
@@ -325,13 +338,13 @@ export class FileInfoService {
 		mime: string;
 		ext: string | null;
 	}> {
-		// Check 0 byte
+	// Check 0 byte
 		const fileSize = await this.getFileSize(path);
 		if (fileSize === 0) {
 			return TYPE_OCTET_STREAM;
 		}
 
-		const type = await fileTypeFromFile(path);
+		const type = await fileType.fileTypeFromFile(path);
 
 		if (type) {
 			// XMLはSVGかもしれない
@@ -340,7 +353,7 @@ export class FileInfoService {
 			}
 
 			return {
-				mime: type.mime,
+				mime: this.fixMime(type.mime),
 				ext: type.ext,
 			};
 		}
