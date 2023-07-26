@@ -4,7 +4,7 @@
 		<MkInput v-model="searchQuery" :large="true" :autofocus="true" type="search">
 			<template #prefix><i class="ti ti-search"></i></template>
 		</MkInput>
-		<MkRadios v-model="searchOrigin" @update:model-value="search()">
+		<MkRadios v-model="searchOrigin" @update:modelValue="search()">
 			<option value="combined">{{ i18n.ts.all }}</option>
 			<option value="local">{{ i18n.ts.local }}</option>
 			<option value="remote">{{ i18n.ts.remote }}</option>
@@ -67,7 +67,7 @@ async function search() {
 		endpoint: 'users/search',
 		limit: 10,
 		params: {
-			query: searchQuery,
+			query: query,
 			origin: searchOrigin,
 		},
 	};

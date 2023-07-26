@@ -172,12 +172,6 @@ export function pageWindow(path: string) {
 	}, {}, 'closed');
 }
 
-export function modalPageWindow(path: string) {
-	popup(defineAsyncComponent(() => import('@/components/MkModalPageWindow.vue')), {
-		initialPath: path,
-	}, {}, 'closed');
-}
-
 export function toast(message: string) {
 	popup(MkToast, {
 		message,
@@ -466,11 +460,13 @@ export async function pickEmoji(src: HTMLElement | null, opts) {
 
 export async function cropImage(image: Misskey.entities.DriveFile, options: {
 	aspectRatio: number;
+	uploadFolder?: string | null;
 }): Promise<Misskey.entities.DriveFile> {
 	return new Promise((resolve, reject) => {
 		popup(defineAsyncComponent(() => import('@/components/MkCropperDialog.vue')), {
 			file: image,
 			aspectRatio: options.aspectRatio,
+			uploadFolder: options.uploadFolder,
 		}, {
 			ok: x => {
 				resolve(x);

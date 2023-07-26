@@ -516,7 +516,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		if (data.poll && data.poll.expiresAt) {
 			const delay = data.poll.expiresAt.getTime() - Date.now();
-			this.queueService.endedPollNotificationQueue.add({
+			this.queueService.endedPollNotificationQueue.add(note.id, {
 				noteId: note.id,
 			}, {
 				delay,
@@ -576,12 +576,14 @@ export class NoteCreateService implements OnApplicationShutdown {
 			if (data.reply) {
 				// 通知
 				if (data.reply.userHost === null) {
-					const threadMuted = await this.noteThreadMutingsRepository.findOneBy({
-						userId: data.reply.userId,
-						threadId: data.reply.threadId ?? data.reply.id,
+					const isThreadMuted = await this.noteThreadMutingsRepository.exist({
+						where: {
+							userId: data.reply.userId,
+							threadId: data.reply.threadId ?? data.reply.id,
+						},
 					});
 
-					if (!threadMuted) {
+					if (!isThreadMuted) {
 						nm.push(data.reply.userId, 'reply');
 						this.globalEventService.publishMainStream(data.reply.userId, 'reply', noteObj);
 
@@ -678,7 +680,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		// Register to search database
 		this.index(note);
 	}
-	
+
 	@bindThis
 	private isSensitive(note: Option, sensitiveWord: string[]): boolean {
 		if (sensitiveWord.length > 0) {
@@ -718,12 +720,14 @@ export class NoteCreateService implements OnApplicationShutdown {
 	@bindThis
 	private async createMentionedEvents(mentionedUsers: MinimumUser[], note: Note, nm: NotificationManager) {
 		for (const u of mentionedUsers.filter(u => this.userEntityService.isLocalUser(u))) {
-			const threadMuted = await this.noteThreadMutingsRepository.findOneBy({
-				userId: u.id,
-				threadId: note.threadId ?? note.id,
+			const isThreadMuted = await this.noteThreadMutingsRepository.exist({
+				where: {
+					userId: u.id,
+					threadId: note.threadId ?? note.id,
+				},
 			});
 
-			if (threadMuted) {
+			if (isThreadMuted) {
 				continue;
 			}
 
@@ -764,7 +768,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 	@bindThis
 	private index(note: Note) {
 		if (note.text == null && note.cw == null) return;
-		
+
 		this.searchService.indexNote(note);
 	}
 
@@ -796,7 +800,13 @@ export class NoteCreateService implements OnApplicationShutdown {
 		return mentionedUsers;
 	}
 
-	onApplicationShutdown(signal?: string | undefined) {
+	@bindThis
+	public dispose(): void {
 		this.#shutdownController.abort();
+	}
+
+	@bindThis
+	public onApplicationShutdown(signal?: string | undefined): void {
+		this.dispose();
 	}
 }

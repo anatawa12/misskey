@@ -90,6 +90,7 @@ onMounted(async () => {
 					ticks: {
 						callback: (value, index, values) => value + '%',
 					},
+					min: 0,
 				},
 			},
 			interaction: {
@@ -124,7 +125,3 @@ onMounted(async () => {
 	});
 });
 </script>
-
-<style lang="scss" scoped>
-
-</style>
