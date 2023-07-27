@@ -18,7 +18,7 @@ export function chat2pathSelector(emojiStyle: string): (char: string) => string 
 }
 
 function char2twemojiFilePath(char: string): string {
-	let codes = Array.from(char).map(x => x.codePointAt(0)?.toString(16));
+	let codes = Array.from(char, x => x.codePointAt(0)?.toString(16));
 	if (!codes.includes('200d')) codes = codes.filter(x => x !== 'fe0f');
 	codes = codes.filter(x => x && x.length);
 	const fileName = codes.join('-');
@@ -26,7 +26,7 @@ function char2twemojiFilePath(char: string): string {
 }
 
 function char2fluentEmojiFilePath(char: string): string {
-	let codes = Array.from(char).map(x => x.codePointAt(0)?.toString(16));
+	let codes = Array.from(char, x => x.codePointAt(0)?.toString(16));
 	// Fluent Emojiは国旗非対応 https://github.com/microsoft/fluentui-emoji/issues/25
 	if (codes[0]?.startsWith('1f1')) return char2twemojiFilePath(char);
 	if (!codes.includes('200d')) codes = codes.filter(x => x !== 'fe0f');
@@ -39,7 +39,7 @@ const blobize = ['😮‍💨', '😵‍💫', '🫠', '🫣', '🫢', '🫡', '
 
 function char2BlobmojiFilePath(char: string): string {
 	if (!blobize.includes(char)) return char2NotoEmojiFilePath(char);
-	let codes = Array.from(char).map(x => x.codePointAt(0)?.toString(16).padStart(4, '0'));
+	let codes = Array.from(char, x => x.codePointAt(0)?.toString(16).padStart(4, '0'));
 	if (!codes.includes('200d')) codes = codes.filter(x => x !== 'fe0f');
 	codes = codes.filter(x => x && x.length);
 	const fileName = codes.join('_');
@@ -47,7 +47,7 @@ function char2BlobmojiFilePath(char: string): string {
 }
 
 function char2NotoEmojiFilePath(char: string): string {
-	let codes = Array.from(char).map(x => x.codePointAt(0)?.toString(16).padStart(4, '0'));
+	let codes = Array.from(char, x => x.codePointAt(0)?.toString(16).padStart(4, '0'));
 	// NotoEmojiも国旗非対応
 	if (codes[0]?.startsWith('1f1')) return char2twemojiFilePath(char);
 	if (!codes.includes('200d')) codes = codes.filter(x => x !== 'fe0f');
