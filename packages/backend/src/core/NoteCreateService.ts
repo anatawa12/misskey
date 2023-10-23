@@ -737,7 +737,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 					this.featuredService.updateInChannelNotesRanking(renote.channelId, renote.id, 5);
 				}
 			} else {
-				if (renote.visibility === 'public' && renote.userHost == null && renote.replyId == null) {
+				if (renote.visibility === 'public' && renote.replyId == null) {
 					this.featuredService.updateGlobalNotesRanking(renote.id, 5);
 					this.featuredService.updatePerUserNotesRanking(renote.userId, renote.id, 5);
 				}
