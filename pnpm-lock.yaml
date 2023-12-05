@@ -739,6 +739,9 @@ importers:
       eventemitter3:
         specifier: 5.0.1
         version: 5.0.1
+      exifr:
+        specifier: github:m-hayabusa/exifr#dist
+        version: github.com/m-hayabusa/exifr/2cf6c14fcd8eab52a7a7de53af7fdb01a4a9f90f
       gsap:
         specifier: 3.12.2
         version: 3.12.2

@@ -5,6 +5,7 @@
 
 import { reactive, ref } from 'vue';
 import * as Misskey from 'misskey-js';
+import exifr from 'exifr';
 import { readAndCompressImage } from 'browser-image-resizer';
 import { getCompressionConfig } from './upload/compress-config.js';
 import { defaultStore } from '@/store.js';
@@ -74,12 +75,34 @@ export function uploadFile(
 				}
 			}
 
+			const comment = await exifr.parse(file, true)
+				.catch(err => { console.error('Failed to parse image', err); })
+				.then((metadata) => {
+					if (metadata) {
+						if (metadata.ImageDescription) {
+							return metadata.ImageDescription;
+						} else if (metadata.descripton && metadata.descripton.value) {
+							return metadata.descripton.value;
+						} else if (metadata.userComment) {
+							try {
+								return new TextDecoder().decode(metadata.userComment).replaceAll('\0', '');
+							} catch (ex) {
+								// UTF-8でない可能性が高い 無視してよいだろう
+							}
+						}
+					}
+				});
+
 			const formData = new FormData();
 			formData.append('i', $i.token);
 			formData.append('force', 'true');
 			formData.append('file', resizedImage ?? file);
 			formData.append('name', ctx.name);
 			if (folder) formData.append('folderId', folder);
+
+			if (comment !== undefined) {
+				formData.append('comment', comment);
+			}
 
 			const xhr = new XMLHttpRequest();
 			xhr.open('POST', apiUrl + '/drive/files/create', true);
