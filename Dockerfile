@@ -80,6 +80,8 @@ COPY --chown=misskey:misskey --from=target-builder /misskey/packages/backend/nod
 COPY --chown=misskey:misskey --from=native-builder /misskey/built ./built
 COPY --chown=misskey:misskey --from=native-builder /misskey/packages/backend/built ./packages/backend/built
 COPY --chown=misskey:misskey --from=native-builder /misskey/fluent-emojis /misskey/fluent-emojis
+COPY --chown=misskey:misskey --from=native-builder /misskey/noto-emoji /misskey/noto-emoji
+COPY --chown=misskey:misskey --from=native-builder /misskey/blobmoji /misskey/blobmoji
 COPY --chown=misskey:misskey . ./
 
 ENV LD_PRELOAD=/usr/local/lib/libjemalloc.so
