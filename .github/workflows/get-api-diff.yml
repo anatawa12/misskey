@@ -57,7 +57,7 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: api-artifact
+        name: api-artifact-${{ matrix.api-json-name }}
         path: ${{ matrix.api-json-name }}
 
   save-pr-number:
@@ -70,5 +70,5 @@ jobs:
           echo "$PR_NUMBER" > ./pr_number
       - uses: actions/upload-artifact@v4
         with:
-          name: api-artifact
+          name: api-artifact-pr-number
           path: pr_number
