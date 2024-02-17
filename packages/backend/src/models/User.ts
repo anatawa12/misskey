@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -144,8 +144,10 @@ export class MiUser {
 	})
 	public avatarDecorations: {
 		id: string;
-		angle: number;
-		flipH: boolean;
+		angle?: number;
+		flipH?: boolean;
+		offsetX?: number;
+		offsetY?: number;
 	}[];
 
 	@Index()
