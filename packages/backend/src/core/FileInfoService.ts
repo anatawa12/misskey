@@ -20,6 +20,7 @@ import { encode } from 'blurhash';
 import { createTempDir } from '@/misc/create-temp.js';
 import { AiService } from '@/core/AiService.js';
 import { bindThis } from '@/decorators.js';
+import { DB_MAX_IMAGE_COMMENT_LENGTH } from '@/const.js';
 
 export type FileInfo = {
 	size: number;
@@ -141,6 +142,13 @@ export class FileInfoService {
 			'image/heif',
 		].includes(type.mime)) {
 			description = await this.getDescription(path);
+			if (description) {
+				description = description.trim();
+				if (description.length >= DB_MAX_IMAGE_COMMENT_LENGTH) {
+					description.slice(0, DB_MAX_IMAGE_COMMENT_LENGTH - 3);
+					description += '...';
+				}
+			}
 		}
 
 		let sensitive = false;
@@ -415,7 +423,7 @@ export class FileInfoService {
 				return result.descripton.value;
 			} else if (result.userComment) {
 				try {
-					return new TextDecoder().decode(result.userComment).replaceAll('\0','')
+					return new TextDecoder().decode(result.userComment).replaceAll('\0', '');
 				} catch (e) {
 					// UTF-8でない可能性が高い 無視してよいだろう
 				}

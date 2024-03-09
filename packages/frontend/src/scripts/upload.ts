@@ -91,6 +91,14 @@ export function uploadFile(
 							}
 						}
 					}
+				}).then(description => {
+					if (description) {
+						description = description.trim();
+						if (description.length >= 512) {
+							return description.slice(0, 512 - 3) + '...';
+						}
+					}
+					return undefined;
 				});
 
 			const formData = new FormData();
