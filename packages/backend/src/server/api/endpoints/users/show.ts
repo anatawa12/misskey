@@ -36,6 +36,7 @@ export const meta = {
 				items: {
 					type: 'object',
 					ref: 'UserDetailed',
+					nullable: true,
 				},
 			},
 		],
