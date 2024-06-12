@@ -43,39 +43,43 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</button>
 			<button v-click-anime class="_button" :class="$style.submit" :disabled="!canPost" data-cy-open-post-form-submit @click="post">
 				<div :class="$style.submitInner">
-					<template v-if="posted"></template>
-					<template v-else-if="posting"><MkEllipsis/></template>
-					<template v-else>{{ submitText }}</template>
-					<i style="margin-left: 6px;" :class="posted ? 'ti ti-check' : reply ? 'ti ti-arrow-back-up' : renote ? 'ti ti-quote' : 'ti ti-send'"></i>
+					<span :class="$style.submitInnerText">
+						<template v-if="posted"></template>
+						<template v-else-if="posting"><MkEllipsis/></template>
+						<template v-else>{{ submitText }}</template>
+					</span>
+					<i :class="[$style.submitInnerIcon, posted ? 'ti ti-check' : reply ? 'ti ti-arrow-back-up' : renote ? 'ti ti-quote' : 'ti ti-send']"></i>
 				</div>
 			</button>
 		</div>
 	</header>
-	<MkNoteSimple v-if="reply" :class="$style.targetNote" :note="reply"/>
-	<MkNoteSimple v-if="renote" :class="$style.targetNote" :note="renote"/>
-	<div v-if="quoteId" :class="$style.withQuote"><i class="ti ti-quote"></i> {{ i18n.ts.quoteAttached }}<button @click="quoteId = null"><i class="ti ti-x"></i></button></div>
-	<div v-if="visibility === 'specified'" :class="$style.toSpecified">
-		<span style="margin-right: 8px;">{{ i18n.ts.recipient }}</span>
-		<div :class="$style.visibleUsers">
-			<span v-for="u in visibleUsers" :key="u.id" :class="$style.visibleUser">
-				<MkAcct :user="u"/>
-				<button class="_button" style="padding: 4px 8px;" @click="removeVisibleUser(u)"><i class="ti ti-x"></i></button>
-			</span>
-			<button class="_buttonPrimary" style="padding: 4px; border-radius: 8px;" @click="addVisibleUser"><i class="ti ti-plus ti-fw"></i></button>
+	<div :class="$style.scrollArea">
+		<MkNoteSimple v-if="reply" :class="$style.targetNote" :note="reply"/>
+		<MkNoteSimple v-if="renote" :class="$style.targetNote" :note="renote"/>
+		<div v-if="quoteId" :class="$style.withQuote"><i class="ti ti-quote"></i> {{ i18n.ts.quoteAttached }}<button @click="quoteId = null"><i class="ti ti-x"></i></button></div>
+		<div v-if="visibility === 'specified'" :class="$style.toSpecified">
+			<span style="margin-right: 8px;">{{ i18n.ts.recipient }}</span>
+			<div :class="$style.visibleUsers">
+				<span v-for="u in visibleUsers" :key="u.id" :class="$style.visibleUser">
+					<MkAcct :user="u"/>
+					<button class="_button" style="padding: 4px 8px;" @click="removeVisibleUser(u)"><i class="ti ti-x"></i></button>
+				</span>
+				<button class="_buttonPrimary" style="padding: 4px; border-radius: 8px;" @click="addVisibleUser"><i class="ti ti-plus ti-fw"></i></button>
+			</div>
 		</div>
-	</div>
-	<MkInfo v-if="hasNotSpecifiedMentions" warn :class="$style.hasNotSpecifiedMentions">{{ i18n.ts.notSpecifiedMentionWarning }} - <button class="_textButton" @click="addMissingMention()">{{ i18n.ts.add }}</button></MkInfo>
-	<input v-show="useCw" ref="cwInputEl" v-model="cw" :class="$style.cw" :placeholder="i18n.ts.annotation" @keydown="onKeydown">
-	<div :class="[$style.textOuter, { [$style.withCw]: useCw }]">
-		<div v-if="channel" :class="$style.colorBar" :style="{ background: channel.color }"></div>
-		<textarea ref="textareaEl" v-model="text" :class="[$style.text]" :disabled="posting || posted" :readonly="textAreaReadOnly" :placeholder="placeholder" data-cy-post-form-text @keydown="onKeydown" @paste="onPaste" @compositionupdate="onCompositionUpdate" @compositionend="onCompositionEnd"/>
-		<div v-if="maxTextLength - textLength < 100" :class="['_acrylic', $style.textCount, { [$style.textOver]: textLength > maxTextLength }]">{{ maxTextLength - textLength }}</div>
-	</div>
-	<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
-	<XPostFormAttaches v-model="files" @detach="detachFile" @changeSensitive="updateFileSensitive" @changeName="updateFileName" @replaceFile="replaceFile"/>
-	<MkPollEditor v-if="poll" v-model="poll" @destroyed="poll = null"/>
-	<MkNotePreview v-if="showPreview" :class="$style.preview" :text="text" :files="files" :poll="poll ?? undefined" :useCw="useCw" :cw="cw" :user="postAccount ?? $i"/>
-	<div v-if="showingOptions" style="padding: 8px 16px;">
+		<MkInfo v-if="hasNotSpecifiedMentions" warn :class="$style.hasNotSpecifiedMentions">{{ i18n.ts.notSpecifiedMentionWarning }} - <button class="_textButton" @click="addMissingMention()">{{ i18n.ts.add }}</button></MkInfo>
+		<input v-show="useCw" ref="cwInputEl" v-model="cw" :class="$style.cw" :placeholder="i18n.ts.annotation" @keydown="onKeydown">
+		<div :class="[$style.textOuter, { [$style.withCw]: useCw }]">
+			<div v-if="channel" :class="$style.colorBar" :style="{ background: channel.color }"></div>
+			<textarea ref="textareaEl" v-model="text" :class="[$style.text]" :disabled="posting || posted" :readonly="textAreaReadOnly" :placeholder="placeholder" data-cy-post-form-text @keydown="onKeydown" @paste="onPaste" @compositionupdate="onCompositionUpdate" @compositionend="onCompositionEnd"/>
+			<div v-if="maxTextLength - textLength < 100" :class="['_acrylic', $style.textCount, { [$style.textOver]: textLength > maxTextLength }]">{{ maxTextLength - textLength }}</div>
+		</div>
+		<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
+		<XPostFormAttaches v-model="files" @detach="detachFile" @changeSensitive="updateFileSensitive" @changeName="updateFileName" @replaceFile="replaceFile"/>
+		<MkPollEditor v-if="poll" v-model="poll" @destroyed="poll = null"/>
+		<MkNotePreview v-if="showPreview" :class="$style.preview" :text="text" :files="files" :poll="poll ?? undefined" :useCw="useCw" :cw="cw" :user="postAccount ?? $i"/>
+		<div v-if="showingOptions" style="padding: 8px 16px;">
+		</div>
 	</div>
 	<footer :class="$style.footer">
 		<div :class="$style.footerLeft">
@@ -1027,7 +1031,16 @@ defineExpose({
 	&.modal {
 		width: 100%;
 		max-width: 520px;
+		display: flex;
+		flex-flow: column;
 	}
+}
+
+.scrollArea {
+	overflow-x: clip;
+	overflow-y: scroll;
+	margin-top: 8px;
+	margin-bottom: 8px;
 }
 
 //#region header
@@ -1037,6 +1050,7 @@ defineExpose({
 	display: flex;
 	flex-wrap: nowrap;
 	gap: 4px;
+	background: var(--X14);
 }
 
 .headerLeft {
@@ -1112,14 +1126,26 @@ defineExpose({
 }
 
 .submitInner {
+	display: flex;
+	justify-content: center;
+	gap: 6px;
+	height: 34px;
 	padding: 0 12px;
 	line-height: 34px;
 	font-weight: bold;
 	border-radius: 6px;
-	min-width: 90px;
+	min-width: 34px;
 	box-sizing: border-box;
 	color: var(--fgOnAccent);
 	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
+}
+
+.submitInnerIcon {
+	line-height: 34px;
+}
+
+.submitInnerText {
+	display: inline;
 }
 
 .headerRightItem {
@@ -1270,8 +1296,9 @@ defineExpose({
 
 .footer {
 	display: flex;
-	padding: 0 16px 16px 16px;
+	padding: 4px;
 	font-size: 1em;
+	background: var(--X14);
 }
 
 .footerLeft {
@@ -1347,10 +1374,6 @@ defineExpose({
 	.text {
 		min-height: 80px;
 	}
-
-	.footer {
-		padding: 0 8px 8px 8px;
-	}
 }
 
 @container (max-width: 350px) {
@@ -1370,5 +1393,8 @@ defineExpose({
 		gap: 0;
 	}
 
+	.submitInnerText {
+		display: none;
+	}
 }
 </style>
