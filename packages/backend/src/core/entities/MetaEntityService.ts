@@ -67,6 +67,7 @@ export class MetaEntityService {
 			feedbackUrl: instance.feedbackUrl,
 			impressumUrl: instance.impressumUrl,
 			privacyPolicyUrl: instance.privacyPolicyUrl,
+			inquiryUrl: instance.inquiryUrl,
 			disableRegistration: instance.disableRegistration,
 			emailRequiredForSignup: instance.emailRequiredForSignup,
 			enableHcaptcha: instance.enableHcaptcha,
@@ -111,6 +112,7 @@ export class MetaEntityService {
 			policies: { ...DEFAULT_POLICIES, ...instance.policies },
 
 			mediaProxy: this.config.mediaProxy,
+			enableUrlPreview: instance.urlPreviewEnabled,
 		};
 
 		return packed;
@@ -137,6 +139,7 @@ export class MetaEntityService {
 			features: {
 				localTimeline: instance.policies.ltlAvailable,
 				globalTimeline: instance.policies.gtlAvailable,
+				vmimiRelayTimeline: instance.policies.vrtlAvailable,
 				registration: !instance.disableRegistration,
 				emailRequiredForSignup: instance.emailRequiredForSignup,
 				hcaptcha: instance.enableHcaptcha,
