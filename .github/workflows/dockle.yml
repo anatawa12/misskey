@@ -23,7 +23,12 @@ jobs:
           cp ./docker-compose_example.yml ./docker-compose.yml
       - run: |
           docker compose up -d web
-          docker tag "$(docker compose images web | awk 'OFS=":" {print $4}' | tail -n +2)" misskey-web:latest
+          echo "----------------"
+          docker compose images web | cat
+          echo "----------------"
+          IMAGE_ID="$(docker compose images web | awk 'OFS=":" {print $4}' | tail -n +2)"
+          echo "IMAGE_ID: $IMAGE_ID"
+          docker tag "$IMAGE_ID" misskey-web:latest
       - run: |
           cmd="dockle --exit-code 1 misskey-web:latest ${image_name}"
           echo "> ${cmd}"
