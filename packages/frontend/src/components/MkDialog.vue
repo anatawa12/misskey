@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
 	position: relative;
 	margin: auto;
 	padding: 32px;
-	min-width: 320px;
+	min-width: 280px;
 	max-width: 480px;
 	box-sizing: border-box;
 	text-align: center;

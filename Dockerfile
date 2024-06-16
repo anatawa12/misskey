@@ -97,6 +97,7 @@ COPY --chown=misskey:misskey --from=native-builder /misskey/noto-emoji /misskey/
 COPY --chown=misskey:misskey --from=native-builder /misskey/blobmoji /misskey/blobmoji
 COPY --chown=misskey:misskey . ./
 
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 ENV LD_PRELOAD=/usr/local/lib/libjemalloc.so
 ENV NODE_ENV=production
 HEALTHCHECK --interval=5s --retries=20 CMD ["/bin/bash", "/misskey/healthcheck.sh"]
