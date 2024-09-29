@@ -120,8 +120,8 @@ importers:
         specifier: 9.0.0
         version: 9.0.0
       '@fastify/static':
-        specifier: 8.0.0
-        version: 8.0.0
+        specifier: 8.0.1
+        version: 8.0.1
       '@fastify/view':
         specifier: 10.0.0
         version: 10.0.0
@@ -729,7 +729,7 @@ importers:
         version: 3.5.10
       aiscript-vscode:
         specifier: github:aiscript-dev/aiscript-vscode#v0.1.11
-        version: https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9
+        version: git+https://git@github.com:aiscript-dev/aiscript-vscode.git#e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9
       astring:
         specifier: 1.9.0
         version: 1.9.0
@@ -1024,7 +1024,7 @@ importers:
         version: 8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)
       storybook-addon-misskey-theme:
         specifier: github:misskey-dev/storybook-addon-misskey-theme
-        version: https://codeload.github.com/misskey-dev/storybook-addon-misskey-theme/tar.gz/cf583db098365b2ccc81a82f63ca9c93bc32b640(@storybook/blocks@8.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/components@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/core-events@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/manager-api@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/preview-api@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/theming@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/types@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: git+https://git@github.com:misskey-dev/storybook-addon-misskey-theme.git#cf583db098365b2ccc81a82f63ca9c93bc32b640(@storybook/blocks@8.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/components@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/core-events@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/manager-api@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/preview-api@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/theming@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/types@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       vite-plugin-turbosnap:
         specifier: 1.0.3
         version: 1.0.3
@@ -2755,9 +2755,6 @@ packages:
 
   '@fastify/send@3.1.1':
     resolution: {integrity: sha512-LdiV2mle/2tH8vh6GwGl0ubfUAgvY+9yF9oGI1iiwVyNUVOQamvw5n+OFu6iCNNoyuCY80FFURBn4TZCbTe8LA==}
-
-  '@fastify/static@8.0.0':
-    resolution: {integrity: sha512-VKGn1PQslB2VqzspyMKPu9xasF9vj+YuyGhVLb1ih6V60VVcRvcf0fFRcl3opt6c6YWwhKKdTUTfVE6COnpw6A==}
 
   '@fastify/static@8.0.1':
     resolution: {integrity: sha512-7idyhbcgf14v4bjWzUeHEFvnVxvNJ1n5cyGPgFtwTZjnjUQ1wgC7a2FQai7OGKqCKywDEjzbPhAZRW+uEK1LMg==}
@@ -5261,8 +5258,8 @@ packages:
     resolution: {integrity: sha512-gOsf2YwSlleG6IjRYG2A7k0HmBMEo6qVNk9Bp/EaLgAJT5ngH6PXbqa4ItvnEwCm/velL5jAnQgsHsWnjhGmvw==}
     engines: {node: '>=18'}
 
-  aiscript-vscode@https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9:
-    resolution: {tarball: https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9}
+  aiscript-vscode@git+https://git@github.com:aiscript-dev/aiscript-vscode.git#e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9:
+    resolution: {commit: e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9, repo: git@github.com:aiscript-dev/aiscript-vscode.git, type: git}
     version: 0.1.11
     engines: {vscode: ^1.83.0}
 
@@ -10523,8 +10520,8 @@ packages:
     resolution: {integrity: sha512-iCGQj+0l0HOdZ2AEeBADlsRC+vsnDsZsbdSiH1yNSjcfKM7fdpCMfqAL/dwF5BLiw/XhRft/Wax6zQbhq2BcjQ==}
     engines: {node: '>= 0.4'}
 
-  storybook-addon-misskey-theme@https://codeload.github.com/misskey-dev/storybook-addon-misskey-theme/tar.gz/cf583db098365b2ccc81a82f63ca9c93bc32b640:
-    resolution: {tarball: https://codeload.github.com/misskey-dev/storybook-addon-misskey-theme/tar.gz/cf583db098365b2ccc81a82f63ca9c93bc32b640}
+  storybook-addon-misskey-theme@git+https://git@github.com:misskey-dev/storybook-addon-misskey-theme.git#cf583db098365b2ccc81a82f63ca9c93bc32b640:
+    resolution: {commit: cf583db098365b2ccc81a82f63ca9c93bc32b640, repo: git@github.com:misskey-dev/storybook-addon-misskey-theme.git, type: git}
     version: 0.0.0
     peerDependencies:
       '@storybook/blocks': ^7.0.0-rc.4
@@ -13172,15 +13169,6 @@ snapshots:
       fast-decode-uri-component: 1.0.1
       http-errors: 2.0.0
       mime: 3.0.0
-
-  '@fastify/static@8.0.0':
-    dependencies:
-      '@fastify/accept-negotiator': 2.0.0
-      '@fastify/send': 3.1.1
-      content-disposition: 0.5.4
-      fastify-plugin: 5.0.0
-      fastq: 1.17.1
-      glob: 11.0.0
 
   '@fastify/static@8.0.1':
     dependencies:
@@ -16457,7 +16445,7 @@ snapshots:
       clean-stack: 5.2.0
       indent-string: 5.0.0
 
-  aiscript-vscode@https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9:
+  aiscript-vscode@git+https://git@github.com:aiscript-dev/aiscript-vscode.git#e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9:
     dependencies:
       '@aiscript-dev/aiscript-languageserver': https://github.com/aiscript-dev/aiscript-languageserver/releases/download/0.1.6/aiscript-dev-aiscript-languageserver-0.1.6.tgz
       vscode-languageclient: 9.0.1
@@ -23081,7 +23069,7 @@ snapshots:
     dependencies:
       internal-slot: 1.0.5
 
-  storybook-addon-misskey-theme@https://codeload.github.com/misskey-dev/storybook-addon-misskey-theme/tar.gz/cf583db098365b2ccc81a82f63ca9c93bc32b640(@storybook/blocks@8.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/components@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/core-events@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/manager-api@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/preview-api@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/theming@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/types@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  storybook-addon-misskey-theme@git+https://git@github.com:misskey-dev/storybook-addon-misskey-theme.git#cf583db098365b2ccc81a82f63ca9c93bc32b640(@storybook/blocks@8.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/components@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/core-events@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/manager-api@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/preview-api@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/theming@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(@storybook/types@8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@storybook/blocks': 8.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       '@storybook/components': 8.3.3(storybook@8.3.3(bufferutil@4.0.8)(utf-8-validate@6.0.4))
