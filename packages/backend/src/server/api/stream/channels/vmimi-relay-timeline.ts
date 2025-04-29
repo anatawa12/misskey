@@ -56,6 +56,7 @@ class VmimiRelayTimelineChannel extends Channel {
 		if (!this.withLocalOnly && note.localOnly) return;
 		if (note.visibility !== 'public') return;
 		if (note.channelId != null) return;
+		if (!(await this.roleService.getUserPolicies(note.user.id)).streamToVrtl) return;
 
 		// 関係ない返信は除外
 		if (note.reply && this.user && !this.following[note.userId]?.withReplies && !this.withReplies) {

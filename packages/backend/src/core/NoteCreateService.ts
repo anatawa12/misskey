@@ -907,6 +907,8 @@ export class NoteCreateService implements OnApplicationShutdown {
 				}
 			}
 
+			const streamToVrtl = (await this.roleService.getUserPolicies(user.id)).streamToVrtl;
+
 			// 自分自身以外への返信
 			if (isReply(note)) {
 				this.fanoutTimelineService.push(`userTimelineWithReplies:${user.id}`, note.id, note.userHost == null ? this.meta.perLocalUserUserTimelineCacheMax : this.meta.perRemoteUserUserTimelineCacheMax, r);
@@ -917,7 +919,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 						this.fanoutTimelineService.push(`localTimelineWithReplyTo:${note.replyUserId}`, note.id, 300 / 10, r);
 					}
 				}
-				if (note.visibility === 'public' && this.vmimiRelayTimelineService.isRelayedInstance(note.userHost) && !note.localOnly) {
+				if (streamToVrtl && note.visibility === 'public' && this.vmimiRelayTimelineService.isRelayedInstance(note.userHost) && !note.localOnly) {
 					this.fanoutTimelineService.push('vmimiRelayTimelineWithReplies', note.id, this.meta.vmimiRelayTimelineCacheMax, r);
 					if (note.replyUserHost == null) {
 						this.fanoutTimelineService.push(`vmimiRelayTimelineWithReplyTo:${note.replyUserId}`, note.id, this.meta.vmimiRelayTimelineCacheMax / 10, r);
@@ -935,7 +937,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 						this.fanoutTimelineService.push('localTimelineWithFiles', note.id, 500, r);
 					}
 				}
-				if (note.visibility === 'public' && this.vmimiRelayTimelineService.isRelayedInstance(note.userHost) && !note.localOnly) {
+				if (streamToVrtl && note.visibility === 'public' && this.vmimiRelayTimelineService.isRelayedInstance(note.userHost) && !note.localOnly) {
 					this.fanoutTimelineService.push('vmimiRelayTimeline', note.id, this.meta.vmimiRelayTimelineCacheMax, r);
 					if (note.fileIds.length > 0) {
 						this.fanoutTimelineService.push('vmimiRelayTimelineWithFiles', note.id, this.meta.vmimiRelayTimelineCacheMax / 2, r);

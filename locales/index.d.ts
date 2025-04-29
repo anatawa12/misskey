@@ -7441,6 +7441,10 @@ export interface Locale extends ILocale {
              */
             "canPublicNote": string;
             /**
+             * VRTLへノートを流す
+             */
+            "streamToVrtl": string;
+            /**
              * ノート内の最大メンション数
              */
             "mentionMax": string;

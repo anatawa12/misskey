@@ -81,6 +81,7 @@ export const ROLE_POLICIES = [
 	'ltlAvailable',
 	'vrtlAvailable',
 	'canPublicNote',
+	'streamToVrtl',
 	'mentionLimit',
 	'canInvite',
 	'inviteLimit',

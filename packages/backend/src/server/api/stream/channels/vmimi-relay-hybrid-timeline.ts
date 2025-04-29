@@ -75,6 +75,7 @@ class VmimiRelayHybridTimelineChannel extends Channel {
 		}
 
 		if (this.isNoteMutedOrBlocked(note)) return;
+		if (!(await this.roleService.getUserPolicies(note.user.id)).streamToVrtl) return;
 
 		if (note.reply) {
 			const reply = note.reply;

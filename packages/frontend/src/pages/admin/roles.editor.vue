@@ -185,6 +185,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.streamToVrtl, 'streamToVrtl'])">
+				<template #label>{{ i18n.ts._role._options.streamToVrtl }}</template>
+				<template #suffix>
+					<span v-if="role.policies.streamToVrtl.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.streamToVrtl.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.streamToVrtl)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.streamToVrtl.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkSwitch v-model="role.policies.streamToVrtl.value" :disabled="role.policies.streamToVrtl.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts.enable }}</template>
+					</MkSwitch>
+					<MkRange v-model="role.policies.streamToVrtl.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.chatAvailability, 'chatAvailability'])">
 				<template #label>{{ i18n.ts._role._options.chatAvailability }}</template>
 				<template #suffix>
