@@ -152,6 +152,32 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</MkFolder>
 					</SearchMarker>
 
+					<SearchMarker :keywords="['default', 'image', 'compress', 'compression', 'resize', 'lossly']">
+						<MkFolder :defaultOpen="true">
+							<template #icon><i class="ti ti-photo"></i></template>
+							<template #label><SearchLabel>{{ i18n.ts._imageCompressionMode.title }}</SearchLabel></template>
+							<template #caption><SearchKeyword>{{ i18n.ts._imageCompressionMode.description }}</SearchKeyword></template>
+
+							<div class="_gaps">
+								<MkSelect
+									v-model="imageResizeSize"
+									:items="[
+										{ value: Number.POSITIVE_INFINITY, label: i18n.ts._imageCompressionMode.unlimitedResolution },
+										...imageCompressionTargetSizes.map(v => ({ value: v, label: `${v}x${v}` })),
+									]"
+								>
+									<template #label><SearchKeyword>{{ i18n.ts._imageCompressionMode.maxImageResolution }}</SearchKeyword></template>
+									<template #caption>{{ i18n.ts._imageCompressionMode.maxImageResolutionDescription }}</template>
+								</MkSelect>
+								<MkSwitch v-model="imageCompressLossy">
+									<template #label><SearchKeyword>{{ i18n.ts._imageCompressionMode.compressImageLossy }}</SearchKeyword></template>
+									<template #caption>{{ i18n.ts._imageCompressionMode.compressImageLossyDescription }}</template>
+								</MkSwitch>
+							</div>
+						</MkFolder>
+					</SearchMarker>
+
+					<!-- This fork does not use defaultImageCompressionLevel, use imageCompressionMode and imageResizeSize above instead
 					<SearchMarker :keywords="['default', 'image', 'compression']">
 						<MkPreferenceContainer k="defaultImageCompressionLevel">
 							<MkSelect
@@ -191,6 +217,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</MkSelect>
 						</MkPreferenceContainer>
 					</SearchMarker>
+					-->
 				</div>
 			</FormSection>
 		</SearchMarker>
@@ -199,7 +226,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import * as Misskey from 'misskey-js';
 import tinycolor from 'tinycolor2';
 import XWatermarkItem from './drive.WatermarkItem.vue';
@@ -225,6 +252,7 @@ import MkFeatureBanner from '@/components/MkFeatureBanner.vue';
 import { selectDriveFolder } from '@/utility/drive.js';
 import MkFolder from '@/components/MkFolder.vue';
 import MkButton from '@/components/MkButton.vue';
+import { imageCompressionTargetSizes } from '@/utility/image-compression';
 import { genId } from '@/utility/id.js';
 
 const $i = ensureSignin();
@@ -249,9 +277,21 @@ const meterStyle = computed(() => {
 });
 
 const keepOriginalFilename = prefer.model('keepOriginalFilename');
+
 const defaultWatermarkPresetId = prefer.model('defaultWatermarkPresetId');
-const defaultImageCompressionLevel = prefer.model('defaultImageCompressionLevel');
-const defaultVideoCompressionLevel = prefer.model('defaultVideoCompressionLevel');
+//const defaultImageCompressionLevel = prefer.model('defaultImageCompressionLevel');
+
+const imageCompressionModePrefer = prefer.model('imageCompressionMode');
+const imageResizeSizePrefer = prefer.model('imageResizeSize');
+const imageCompressLossy = ref(imageCompressionModePrefer.value.endsWith('CompressLossy'));
+const imageResizeSize = ref(imageCompressionModePrefer.value.startsWith('resize') ? imageResizeSizePrefer.value : Number.POSITIVE_INFINITY);
+
+watch([imageCompressLossy, imageResizeSize], ([imageCompressLossyValue, imageResizeSizeValue]) => {
+	const resizeMode: 'resize' | 'noResize' = imageResizeSizeValue !== Number.POSITIVE_INFINITY ? 'resize' : 'noResize';
+	const compressionMode: 'CompressLossy' | 'Compress' = imageCompressLossyValue ? 'CompressLossy' : 'Compress';
+	imageCompressionModePrefer.value = `${resizeMode}${compressionMode}`;
+	imageResizeSizePrefer.value = imageResizeSizeValue !== Number.POSITIVE_INFINITY ? imageResizeSizeValue : imageCompressionTargetSizes[imageCompressionTargetSizes.length - 1];
+});
 
 const watermarkPresetsSyncEnabled = ref(prefer.isSyncEnabled('watermarkPresets'));
 
