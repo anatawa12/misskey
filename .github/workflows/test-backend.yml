@@ -18,6 +18,7 @@ on:
       - packages/misskey-js/**
       - .github/workflows/test-backend.yml
       - .github/misskey/test.yml
+  workflow_dispatch:
 jobs:
   unit:
     name: Unit tests (backend)
