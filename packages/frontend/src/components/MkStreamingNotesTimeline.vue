@@ -152,6 +152,7 @@ if (props.src === 'antenna') {
 	paginator = markRaw(new Paginator('notes/vmimi-relay-timeline', {
 		computedParams: computed(() => ({
 			withRenotes: props.withRenotes,
+			withReplies: props.withReplies,
 			withFiles: props.onlyFiles ? true : undefined,
 			withLocalOnly: props.withLocalOnly,
 		})),
@@ -161,6 +162,7 @@ if (props.src === 'antenna') {
 	paginator = markRaw(new Paginator('notes/vmimi-relay-hybrid-timeline', {
 		computedParams: computed(() => ({
 			withRenotes: props.withRenotes,
+			withReplies: props.withReplies,
 			withFiles: props.onlyFiles ? true : undefined,
 			withLocalOnly: props.withLocalOnly,
 		})),
