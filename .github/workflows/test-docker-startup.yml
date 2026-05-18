@@ -1,0 +1,75 @@
+name: Test (Docker startup)
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  docker-startup:
+    name: Docker startup test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:18
+        ports:
+          - 54312:5432
+        env:
+          POSTGRES_DB: test-misskey
+          POSTGRES_HOST_AUTH_METHOD: trust
+      redis:
+        image: redis:8
+        ports:
+          - 56312:6379
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          submodules: true
+
+      - name: Build Docker image
+        run: docker build -t misskey-web:ci .
+
+      - name: Start container
+        run: |
+          docker run --detach \
+            --name misskey-web \
+            --network host \
+            --volume "$PWD/.github/misskey/test.yml:/misskey/.config/default.yml:ro" \
+            misskey-web:ci
+
+      - name: Wait for healthcheck
+        run: |
+          for i in {1..60}; do
+            state=$(docker inspect --format='{{.State.Status}}' misskey-web)
+            health=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' misskey-web)
+            echo "Attempt ${i}: state=${state} health=${health}"
+
+            if [ "$state" = "exited" ] || [ "$state" = "dead" ]; then
+              echo "Container exited unexpectedly."
+              docker logs misskey-web || true
+              exit 1
+            fi
+
+            if [ "$health" = "healthy" ]; then
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          echo "Container did not become healthy in time."
+          docker logs misskey-web || true
+          exit 1
+
+      - name: Show container logs
+        if: always()
+        run: docker logs misskey-web || true
+
+      - name: Cleanup container
+        if: always()
+        run: docker rm -f misskey-web || true
