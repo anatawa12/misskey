@@ -8,6 +8,9 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: read
+
 jobs:
   docker-startup:
     name: Docker startup test
