@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <SearchMarker path="/settings/profile" :label="i18n.ts.profile" :keywords="['profile']" icon="ti ti-user">
 	<div class="_gaps_m">
 		<div class="_panel">
-			<div :class="$style.banner" :style="{ backgroundImage: $i.bannerUrl ? `url(${ $i.bannerUrl })` : null }">
+			<div :class="$style.banner" :style="{ backgroundImage: $i.bannerUrl ? `url(${ $i.bannerUrl })` : '' }">
 				<div :class="$style.bannerEdit">
 					<SearchMarker :keywords="['banner', 'change']">
 						<MkButton primary rounded @click="changeBanner"><SearchLabel>{{ i18n.ts._profile.changeBanner }}</SearchLabel></MkButton>
@@ -110,7 +110,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkInput v-model="profile.followedMessage" :max="200" manualSave :mfmPreview="false">
 				<template #label><SearchLabel>{{ i18n.ts._profile.followedMessage }}</SearchLabel><span class="_beta">{{ i18n.ts.beta }}</span></template>
 				<template #caption>
-					<div><SearchKeyword>{{ i18n.ts._profile.followedMessageDescription }}</SearchKeyword></div>
+					<div><SearchText>{{ i18n.ts._profile.followedMessageDescription }}</SearchText></div>
 					<div>{{ i18n.ts._profile.followedMessageDescriptionForLockedAccount }}</div>
 				</template>
 			</MkInput>
@@ -171,6 +171,7 @@ import { claimAchievement } from '@/utility/achievements.js';
 import { store } from '@/store.js';
 import MkInfo from '@/components/MkInfo.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
+import { genId } from '@/utility/id.js';
 
 const $i = ensureSignin();
 
@@ -199,12 +200,12 @@ watch(() => profile, () => {
 	deep: true,
 });
 
-const fields = ref($i.fields.map(field => ({ id: Math.random().toString(), name: field.name, value: field.value })) ?? []);
+const fields = ref($i.fields.map(field => ({ id: genId(), name: field.name, value: field.value })) ?? []);
 const fieldEditMode = ref(false);
 
 function addField() {
 	fields.value.push({
-		id: Math.random().toString(),
+		id: genId(),
 		name: '',
 		value: '',
 	});

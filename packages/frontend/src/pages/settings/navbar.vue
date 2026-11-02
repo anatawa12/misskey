@@ -64,17 +64,17 @@ import MkPreferenceContainer from '@/components/MkPreferenceContainer.vue';
 import * as os from '@/os.js';
 import { navbarItemDef } from '@/navbar.js';
 import { store } from '@/store.js';
-import { reloadAsk } from '@/utility/reload-ask.js';
 import { i18n } from '@/i18n.js';
 import { definePage } from '@/page.js';
 import { prefer } from '@/preferences.js';
 import { PREF_DEF } from '@/preferences/def.js';
 import { getInitialPrefValue } from '@/preferences/manager.js';
+import { genId } from '@/utility/id.js';
 
 const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
 
 const items = ref(prefer.s.menu.map(x => ({
-	id: Math.random().toString(),
+	id: genId(),
 	type: x,
 })));
 
@@ -91,9 +91,9 @@ async function addItem() {
 			value: '-', text: i18n.ts.divider,
 		}],
 	});
-	if (canceled) return;
+	if (canceled || item == null) return;
 	items.value = [...items.value, {
-		id: Math.random().toString(),
+		id: genId(),
 		type: item,
 	}];
 }
@@ -108,7 +108,7 @@ async function save() {
 
 function reset() {
 	items.value = getInitialPrefValue('menu').map(x => ({
-		id: Math.random().toString(),
+		id: genId(),
 		type: x,
 	}));
 }

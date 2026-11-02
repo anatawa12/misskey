@@ -9,10 +9,11 @@ import { markRaw, ref, defineAsyncComponent, nextTick } from 'vue';
 import { EventEmitter } from 'eventemitter3';
 import * as Misskey from 'misskey-js';
 import type { Component, Ref } from 'vue';
-import type { ComponentProps as CP } from 'vue-component-type-helpers';
+import type { ComponentEmit, ComponentProps as CP } from 'vue-component-type-helpers';
 import type { Form, GetFormResultType } from '@/utility/form.js';
 import type { MenuItem } from '@/types/menu.js';
 import type { PostFormProps } from '@/types/post-form.js';
+import type { UploaderFeatures } from '@/composables/use-uploader.js';
 import type MkRoleSelectDialog_TypeReferenceOnly from '@/components/MkRoleSelectDialog.vue';
 import type MkEmojiPickerDialog_TypeReferenceOnly from '@/components/MkEmojiPickerDialog.vue';
 import { misskeyApi } from '@/utility/misskey-api.js';
@@ -156,33 +157,65 @@ export function claimZIndex(priority: keyof typeof zIndexes = 'low'): number {
 	return zIndexes[priority];
 }
 
-// InstanceType<typeof Component>['$emit'] だとインターセクション型が返ってきて
-// 使い物にならないので、代わりに ['$props'] から色々省くことで emit の型を生成する
-// FIXME: 何故か *.ts ファイルからだと型がうまく取れない？ことがあるのをなんとかしたい
-type ComponentEmit<T> = T extends new () => { $props: infer Props }
-	? [keyof Pick<T, Extract<keyof T, `on${string}`>>] extends [never]
-		? Record<string, unknown> // *.ts ファイルから型がうまく取れないとき用（これがないと {} になって型エラーがうるさい）
-		: EmitsExtractor<Props>
-	: T extends (...args: any) => any
-		? ReturnType<T> extends { [x: string]: any; __ctx?: { [x: string]: any; props: infer Props } }
-			? [keyof Pick<T, Extract<keyof T, `on${string}`>>] extends [never]
-				? Record<string, unknown>
-				: EmitsExtractor<Props>
-			: never
-		: never;
-
 // props に ref を許可するようにする
 type ComponentProps<T extends Component> = { [K in keyof CP<T>]: CP<T>[K] | Ref<CP<T>[K]> };
-
-type EmitsExtractor<T> = {
-	[K in keyof T as K extends `onVnode${string}` ? never : K extends `on${infer E}` ? Uncapitalize<E> : K extends string ? never : K]: T[K];
-};
 
 export function popup<T extends Component>(
 	component: T,
 	props: ComponentProps<T>,
 	events: Partial<ComponentEmit<T>> = {},
 ): { dispose: () => void } {
+	markRaw(component);
+
+	const id = ++popupIdCount;
+	const dispose = () => {
+		// このsetTimeoutが無いと挙動がおかしくなる(autocompleteが閉じなくなる)。Vueのバグ？
+		window.setTimeout(() => {
+			popups.value = popups.value.filter(p => p.id !== id);
+		}, 0);
+	};
+	const state = {
+		component,
+		props,
+		events,
+		id,
+	};
+
+	popups.value.push(state);
+
+	return {
+		dispose,
+	};
+}
+
+export async function popupAsyncWithDialog<T extends Component>(
+	componentFetching: Promise<T>,
+	props: ComponentProps<T>,
+	events: Partial<ComponentEmit<T>> = {},
+): Promise<{ dispose: () => void }> {
+	let component: T;
+	let closeWaiting = () => {};
+
+	const timer = window.setTimeout(() => {
+		closeWaiting = waiting();
+	}, 100); // コンポーネントがキャッシュされている場合にもwaitingが表示されて画面がちらつくのを防止するためにラグを追加
+
+	try {
+		component = await componentFetching;
+	} catch (err) {
+		window.clearTimeout(timer);
+		closeWaiting();
+		alert({
+			type: 'error',
+			title: i18n.ts.somethingHappened,
+			text: 'CODE: ASYNC_COMP_LOAD_FAIL',
+		});
+		throw err;
+	}
+
+	window.clearTimeout(timer);
+	closeWaiting();
+
 	markRaw(component);
 
 	const id = ++popupIdCount;
@@ -651,7 +684,7 @@ export async function cropImageFile(imageFile: File | Blob, options: {
 	});
 }
 
-export function popupMenu(items: MenuItem[], anchorElement?: HTMLElement | EventTarget | null, options?: {
+export function popupMenu(items: (MenuItem | null)[], anchorElement?: HTMLElement | EventTarget | null, options?: {
 	align?: string;
 	width?: number;
 	onClosing?: () => void;
@@ -663,7 +696,7 @@ export function popupMenu(items: MenuItem[], anchorElement?: HTMLElement | Event
 	let returnFocusTo = getHTMLElementOrNull(anchorElement) ?? getHTMLElementOrNull(window.document.activeElement);
 	return new Promise(resolve => nextTick(() => {
 		const { dispose } = popup(MkPopupMenu, {
-			items,
+			items: items.filter(x => x != null),
 			anchorElement,
 			width: options?.width,
 			align: options?.align,
@@ -785,14 +818,16 @@ export function launchUploader(
 	options?: {
 		folderId?: string | null;
 		multiple?: boolean;
+		features?: UploaderFeatures;
 	},
 ): Promise<Misskey.entities.DriveFile[]> {
-	return new Promise((res, rej) => {
+	return new Promise(async (res, rej) => {
 		if (files.length === 0) return rej();
-		const { dispose } = popup(defineAsyncComponent(() => import('@/components/MkUploaderDialog.vue')), {
+		const { dispose } = await popupAsyncWithDialog(import('@/components/MkUploaderDialog.vue').then(x => x.default), {
 			files: markRaw(files),
 			folderId: options?.folderId,
 			multiple: options?.multiple,
+			features: options?.features,
 		}, {
 			done: driveFiles => {
 				if (driveFiles.length === 0) return rej();

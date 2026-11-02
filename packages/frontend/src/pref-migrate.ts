@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { v4 as uuid } from 'uuid';
 import type { DeckProfile } from '@/deck.js';
+import { genId } from '@/utility/id.js';
 import { ColdDeviceStorage, store } from '@/store.js';
 import { prefer } from '@/preferences.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
@@ -42,7 +42,7 @@ export function migrateOldSettings() {
 					key: key,
 				});
 				profiles.push({
-					id: uuid(),
+					id: genId(),
 					name: key,
 					columns: deck.columns,
 					layout: deck.layout,
@@ -136,7 +136,6 @@ export function migrateOldSettings() {
 		prefer.commit('sound.on.reaction', store.s.sound_reaction as any);
 		prefer.commit('defaultNoteVisibility', store.s.defaultNoteVisibility);
 		prefer.commit('defaultNoteLocalOnly', store.s.defaultNoteLocalOnly);
-		prefer.commit('imageCompressionMode', store.s.imageCompressionMode);
 
 		window.setTimeout(() => {
 			unisonReload();

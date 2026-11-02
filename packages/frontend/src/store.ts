@@ -10,23 +10,10 @@ import darkTheme from '@@/themes/d-green-lime.json5';
 import { hemisphere } from '@@/js/intl-const.js';
 import type { DeviceKind } from '@/utility/device-kind.js';
 import type { Plugin } from '@/plugin.js';
+import type { TIPS } from '@/tips.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { Pizzax } from '@/lib/pizzax.js';
 import { DEFAULT_DEVICE_KIND } from '@/utility/device-kind.js';
-
-export const TIPS = [
-	'drive',
-	'uploader',
-	'clips',
-	'userLists',
-	'tl.home',
-	'tl.local',
-	'tl.social',
-	'tl.global',
-	'tl.vmimi-relay',
-	'tl.vmimi-relay-social',
-	'abuses',
-] as const;
 
 /**
  * 「状態」を管理するストア(not「設定」)
@@ -40,13 +27,9 @@ export const store = markRaw(new Pizzax('base', {
 		where: 'device',
 		default: {} as Partial<Record<typeof TIPS[number], boolean>>, // true = 既読
 	},
-	imageCompressionMode: {
-		where: 'account',
-		default: 'resizeCompress' as 'resizeCompress' | 'noResizeCompress' | 'resizeCompressLossy' | 'noResizeCompressLossy',
-	},
 	memo: {
 		where: 'account',
-		default: null,
+		default: null as string | null,
 	},
 	reactionAcceptance: {
 		where: 'account',
@@ -124,7 +107,7 @@ export const store = markRaw(new Pizzax('base', {
 	},
 	accountInfos: {
 		where: 'device',
-		default: {} as Record<string, Misskey.entities.User>, // host/userId, user
+		default: {} as Record<string, Misskey.entities.MeDetailed>, // host/userId, user
 	},
 
 	enablePreferencesAutoCloudBackup: {
