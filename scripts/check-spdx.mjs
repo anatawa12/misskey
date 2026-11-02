@@ -61,7 +61,7 @@ const EXCLUDED_FILES = new Set([
 ]);
 const HTML_COMMENT_EXTENSIONS = new Set(['.vue', '.html']);
 
-const COPYRIGHT_LINE = 'SPDX-FileCopyrightText: syuilo and misskey-project';
+const COPYRIGHT_LINE = 'SPDX-FileCopyrightText:';
 const LICENSE_LINE = 'SPDX-License-Identifier: AGPL-3.0-only';
 
 const HTML_HEADER = `<!--\n${COPYRIGHT_LINE}\n${LICENSE_LINE}\n-->\n\n`;
@@ -195,6 +195,7 @@ function judge(file) {
  * @returns {void}
  */
 function insertHeader(file) {
+	throw new Error("--fix support is disabled since copyright text can vary in this fork");
 	const original = readFileSync(file, 'utf8');
 	const bom = original.charCodeAt(0) === 0xfeff ? '﻿' : '';
 	const body = bom === '' ? original : original.slice(1);
