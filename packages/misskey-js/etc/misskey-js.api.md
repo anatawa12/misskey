@@ -842,6 +842,18 @@ export type Channels = {
         };
         receives: null;
     };
+    reversi: {
+        params: null;
+        events: {
+            matched: (payload: {
+                game: ReversiGameDetailed;
+            }) => void;
+            invited: (payload: {
+                user: User;
+            }) => void;
+        };
+        receives: null;
+    };
     reversiGame: {
         params: {
             gameId: string;
@@ -949,6 +961,15 @@ type ChannelsFollowedResponse = operations['channels___followed']['responses']['
 
 // @public (undocumented)
 type ChannelsFollowRequest = operations['channels___follow']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type ChannelsMuteCreateRequest = operations['channels___mute___create']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type ChannelsMuteDeleteRequest = operations['channels___mute___delete']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type ChannelsMuteListResponse = operations['channels___mute___list']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
 type ChannelsMyFavoritesResponse = operations['channels___my-favorites']['responses']['200']['content']['application/json'];
@@ -1473,6 +1494,10 @@ export type Endpoints = Overwrite<Endpoints_2, {
         }>;
         res: AdminRolesCreateResponse;
     };
+    'clear-browser-cache': {
+        req: EmptyRequest;
+        res: EmptyResponse;
+    };
 }>;
 
 // @public (undocumented)
@@ -1686,6 +1711,9 @@ declare namespace entities {
         ChannelsFollowRequest,
         ChannelsFollowedRequest,
         ChannelsFollowedResponse,
+        ChannelsMuteCreateRequest,
+        ChannelsMuteDeleteRequest,
+        ChannelsMuteListResponse,
         ChannelsMyFavoritesResponse,
         ChannelsOwnedRequest,
         ChannelsOwnedResponse,
@@ -3250,7 +3278,7 @@ type Notification_2 = components['schemas']['Notification'];
 type NotificationsCreateRequest = operations['notifications___create']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
-export const notificationTypes: readonly ["note", "follow", "mention", "reply", "renote", "quote", "reaction", "pollVote", "pollEnded", "receiveFollowRequest", "followRequestAccepted", "groupInvited", "app", "roleAssigned", "chatRoomInvitationReceived", "achievementEarned"];
+export const notificationTypes: readonly ["note", "follow", "mention", "reply", "renote", "quote", "reaction", "pollEnded", "scheduledNotePosted", "scheduledNotePostFailed", "receiveFollowRequest", "followRequestAccepted", "app", "roleAssigned", "chatRoomInvitationReceived", "achievementEarned", "exportCompleted", "test", "login", "createToken"];
 
 // @public (undocumented)
 export function nyaize(text: string): string;
@@ -3363,7 +3391,7 @@ type QueueStats = {
 type QueueStatsLog = QueueStats[];
 
 // @public (undocumented)
-export const queueTypes: readonly ["system", "endedPollNotification", "deliver", "inbox", "db", "relationship", "objectStorage", "userWebhookDeliver", "systemWebhookDeliver"];
+export const queueTypes: readonly ["system", "endedPollNotification", "postScheduledNote", "deliver", "inbox", "db", "relationship", "objectStorage", "userWebhookDeliver", "systemWebhookDeliver"];
 
 // @public (undocumented)
 type RenoteMuteCreateRequest = operations['renote-mute___create']['requestBody']['content']['application/json'];
@@ -3465,6 +3493,9 @@ type RoleLite = components['schemas']['RoleLite'];
 type RolePolicies = components['schemas']['RolePolicies'];
 
 // @public (undocumented)
+export const rolePolicies: readonly ["vrtlAvailable", "gtlAvailable", "ltlAvailable", "canPublicNote", "mentionLimit", "canInvite", "inviteLimit", "inviteLimitCycle", "inviteExpirationTime", "canManageCustomEmojis", "canManageAvatarDecorations", "canSearchNotes", "canSearchUsers", "canUseTranslator", "canHideAds", "driveCapacityMb", "maxFileSizeMb", "alwaysMarkNsfw", "canUpdateBioMedia", "pinLimit", "antennaLimit", "wordMuteLimit", "webhookLimit", "clipLimit", "noteEachClipsLimit", "userListLimit", "userEachUserListsLimit", "rateLimitFactor", "avatarDecorationLimit", "canImportAntennas", "canImportBlocking", "canImportFollowing", "canImportMuting", "canImportUserLists", "chatAvailability", "uploadableFileTypes", "noteDraftLimit", "scheduledNoteLimit", "watermarkAvailable"];
+
+// @public (undocumented)
 type RolesListResponse = operations['roles___list']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
@@ -3521,6 +3552,7 @@ type SigninFlowRequest = {
     'g-recaptcha-response'?: string | null;
     'turnstile-response'?: string | null;
     'm-captcha-response'?: string | null;
+    'testcaptcha-response'?: string | null;
 };
 
 // @public (undocumented)
@@ -3578,6 +3610,7 @@ type SignupRequest = {
     'g-recaptcha-response'?: string | null;
     'turnstile-response'?: string | null;
     'm-captcha-response'?: string | null;
+    'testcaptcha-response'?: string | null;
 };
 
 // @public (undocumented)
@@ -3870,8 +3903,8 @@ type VerifyEmailRequest = operations['verify-email']['requestBody']['content']['
 //
 // src/entities.ts:55:2 - (ae-forgotten-export) The symbol "ModerationLogPayloads" needs to be exported by the entry point index.d.ts
 // src/streaming.ts:57:3 - (ae-forgotten-export) The symbol "ReconnectingWebSocket" needs to be exported by the entry point index.d.ts
-// src/streaming.types.ts:242:4 - (ae-forgotten-export) The symbol "ReversiUpdateKey" needs to be exported by the entry point index.d.ts
-// src/streaming.types.ts:252:4 - (ae-forgotten-export) The symbol "ReversiUpdateSettings" needs to be exported by the entry point index.d.ts
+// src/streaming.types.ts:250:4 - (ae-forgotten-export) The symbol "ReversiUpdateKey" needs to be exported by the entry point index.d.ts
+// src/streaming.types.ts:260:4 - (ae-forgotten-export) The symbol "ReversiUpdateSettings" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
