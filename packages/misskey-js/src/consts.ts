@@ -13,7 +13,6 @@ import type {
 	Role,
 	ReversiGameDetailed,
 	SystemWebhook,
-	UserLite,
 	ChatRoom,
 } from './autogen/models.js';
 
@@ -207,6 +206,7 @@ export const rolePolicies = [
 	'canSearchUsers',
 	'canUseTranslator',
 	'canHideAds',
+	'canCreateChannel',
 	'driveCapacityMb',
 	'maxFileSizeMb',
 	'alwaysMarkNsfw',

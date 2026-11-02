@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { isUserRelated } from '@/misc/is-user-related.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -12,9 +13,11 @@ import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
 import { VmimiRelayTimelineService } from '@/core/VmimiRelayTimelineService.js';
 import { isRenotePacked, isQuotePacked } from '@/misc/is-renote.js';
-import Channel, { type MiChannelService } from '../channel.js';
+import { NoteStreamingHidingService } from '@/server/api/stream/NoteStreamingHidingService.js';
+import Channel, { type ChannelRequest } from '../channel.js';
 
-class VmimiRelayHybridTimelineChannel extends Channel {
+@Injectable({ scope: Scope.TRANSIENT })
+export class VmimiRelayHybridTimelineChannel extends Channel {
 	public readonly chName = 'vmimiRelayHybridTimeline';
 	public static shouldShare = false;
 	public static requireCredential = true as const;
@@ -25,15 +28,16 @@ class VmimiRelayHybridTimelineChannel extends Channel {
 	private withLocalOnly: boolean;
 
 	constructor(
+		@Inject(REQUEST)
+		request: ChannelRequest,
+
 		private metaService: MetaService,
 		private roleService: RoleService,
 		private noteEntityService: NoteEntityService,
 		private vmimiRelayTimelineService: VmimiRelayTimelineService,
-
-		id: string,
-		connection: Channel['connection'],
+		private noteStreamingHidingService: NoteStreamingHidingService,
 	) {
-		super(id, connection);
+		super(request);
 		//this.onNote = this.onNote.bind(this);
 	}
 
@@ -68,11 +72,7 @@ class VmimiRelayHybridTimelineChannel extends Channel {
 			(note.channelId != null && this.followingChannels.has(note.channelId))
 		)) return;
 
-		if (note.visibility === 'followers') {
-			if (!isMe && !Object.hasOwn(this.following, note.userId)) return;
-		} else if (note.visibility === 'specified') {
-			if (!isMe && !note.visibleUserIds!.includes(this.user!.id)) return;
-		}
+		if (!this.isNoteVisibleForMe(note)) return;
 
 		if (this.isNoteMutedOrBlocked(note)) return;
 
@@ -97,11 +97,17 @@ class VmimiRelayHybridTimelineChannel extends Channel {
 			}
 		}
 
-		if (this.user && note.renoteId && !note.text) {
-			if (note.renote && Object.keys(note.renote.reactions).length > 0) {
-				console.log(note.renote.reactionAndUserPairCache);
-				const myRenoteReaction = await this.noteEntityService.populateMyReaction(note.renote, this.user.id);
-				note.renote.myReaction = myRenoteReaction;
+		const filtered = await this.noteStreamingHidingService.filter(note, this.user?.id ?? null);
+		if (!filtered) return;
+		// eslint-disable-next-line no-param-reassign -- これ以降元の Note オブジェクトは見てはいけないので、いっそ再代入した方が安全
+		note = filtered;
+
+		if (this.user) {
+			if (isRenotePacked(note) && !isQuotePacked(note)) {
+				if (note.renote && Object.keys(note.renote.reactions).length > 0) {
+					const myRenoteReaction = await this.noteEntityService.populateMyReaction(note.renote, this.user.id);
+					note.renote.myReaction = myRenoteReaction;
+				}
 			}
 		}
 
@@ -112,32 +118,5 @@ class VmimiRelayHybridTimelineChannel extends Channel {
 	public dispose(): void {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
-	}
-}
-
-@Injectable()
-export class VmimiRelayHybridTimelineChannelService implements MiChannelService<true> {
-	public readonly shouldShare = VmimiRelayHybridTimelineChannel.shouldShare;
-	public readonly requireCredential = VmimiRelayHybridTimelineChannel.requireCredential;
-	public readonly kind = VmimiRelayHybridTimelineChannel.kind;
-
-	constructor(
-		private metaService: MetaService,
-		private roleService: RoleService,
-		private noteEntityService: NoteEntityService,
-		private vmimiRelayTimelineService: VmimiRelayTimelineService,
-	) {
-	}
-
-	@bindThis
-	public create(id: string, connection: Channel['connection']): VmimiRelayHybridTimelineChannel {
-		return new VmimiRelayHybridTimelineChannel(
-			this.metaService,
-			this.roleService,
-			this.noteEntityService,
-			this.vmimiRelayTimelineService,
-			id,
-			connection,
-		);
 	}
 }
