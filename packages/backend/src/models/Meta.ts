@@ -367,7 +367,7 @@ export class MiMeta {
 
 	@Column('varchar', {
 		length: 1024,
-		default: 'https://github.com/anatawa12/misskey/tree/vmimi-relay-timeline-releases?tab=readme-ov-file#vmimi-relay-timeline',
+		default: 'https://github.com/misskey-dev/misskey',
 		nullable: true,
 	})
 	public repositoryUrl: string | null;
